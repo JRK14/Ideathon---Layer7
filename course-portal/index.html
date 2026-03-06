@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Smart Learning Portal</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI;
+}
+
+body{
+height:100vh;
+background:linear-gradient(-45deg,#667eea,#764ba2,#6dd5ed,#2193b0);
+background-size:400% 400%;
+animation:bgmove 12s infinite ease;
+display:flex;
+justify-content:center;
+align-items:center;
+color:white;
+}
+
+@keyframes bgmove{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+.container{
+text-align:center;
+}
+
+h1{
+font-size:48px;
+margin-bottom:40px;
+}
+
+.courses{
+display:flex;
+gap:40px;
+}
+
+.card{
+width:260px;
+padding:40px;
+border-radius:20px;
+background:rgba(255,255,255,0.15);
+backdrop-filter:blur(15px);
+box-shadow:0 15px 35px rgba(0,0,0,0.3);
+cursor:pointer;
+transition:0.4s;
+}
+
+.card:hover{
+transform:translateY(-12px) scale(1.08);
+background:rgba(255,255,255,0.25);
+}
+
+.card h2{
+margin-bottom:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🎓 Learning Portal</h1>
+
+<div class="courses">
+
+<div class="card" onclick="openWebDev()">
+<h2>🌐 Web Development</h2>
+<p>HTML Fundamentals</p>
+</div>
+
+<div class="card" onclick="openJavaScript()">
+<h2>⚡ JavaScript Basics</h2>
+<p>Interactive Web</p>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function openWebDev(){
+window.open("course1.html","_blank");
+}
+
+function openJavaScript(){
+window.open("course2.html","_blank");
+}
+
+</script>
+
+</body>
+</html>

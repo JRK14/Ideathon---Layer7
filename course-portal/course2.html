@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>JavaScript Basics Course</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI;
+}
+
+body{
+background:linear-gradient(135deg,#1d2671,#c33764);
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+
+-webkit-user-select:none;
+-moz-user-select:none;
+-ms-user-select:none;
+user-select:none;
+}
+
+.container{
+width:900px;
+background:rgba(255,255,255,0.08);
+padding:40px;
+border-radius:20px;
+backdrop-filter:blur(20px);
+}
+
+/* lesson cards */
+
+.lesson{
+padding:16px;
+margin:15px 0;
+background:rgba(255,255,255,0.12);
+border-radius:12px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.lesson:hover{
+background:rgba(255,255,255,0.25);
+}
+
+.locked{
+opacity:0.4;
+pointer-events:none;
+}
+
+/* progress bar */
+
+.progressBar{
+width:100%;
+height:12px;
+background:#333;
+border-radius:10px;
+margin-bottom:25px;
+}
+
+.progressFill{
+height:100%;
+width:0%;
+background:#00f2fe;
+border-radius:10px;
+transition:0.4s;
+}
+
+/* video */
+
+video{
+width:100%;
+border-radius:12px;
+}
+
+/* screens */
+
+#videoScreen,#quizScreen{
+display:none;
+}
+
+/* next button */
+
+#nextBtn{
+display:none;
+margin-top:20px;
+padding:12px 30px;
+border:none;
+border-radius:30px;
+background:linear-gradient(45deg,#00f2fe,#4facfe);
+color:black;
+font-weight:bold;
+cursor:pointer;
+}
+
+/* quiz */
+
+.quizTitle{
+text-align:center;
+margin-bottom:25px;
+}
+
+.quizContainer{
+display:flex;
+flex-direction:column;
+gap:20px;
+}
+
+.questionCard{
+background:rgba(255,255,255,0.1);
+padding:20px;
+border-radius:12px;
+}
+
+.questionCard p{
+margin-bottom:12px;
+font-weight:bold;
+}
+
+.questionCard label{
+display:block;
+margin:6px 0;
+cursor:pointer;
+}
+
+.quizButtonContainer{
+text-align:center;
+margin-top:30px;
+}
+
+.submitBtn{
+padding:14px 40px;
+border:none;
+border-radius:30px;
+background:linear-gradient(45deg,#00f2fe,#4facfe);
+color:black;
+font-weight:bold;
+cursor:pointer;
+box-shadow:0 6px 20px rgba(0,0,0,0.3);
+}
+
+/* popup */
+
+.popup{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:white;
+color:black;
+padding:40px;
+border-radius:15px;
+display:none;
+text-align:center;
+width:420px;
+}
+
+/* stars */
+
+.star{
+font-size:25px;
+cursor:pointer;
+color:gray;
+}
+
+.star.active{
+color:gold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- COURSE PAGE -->
+
+<div id="coursePage">
+
+<h2>⚡ JavaScript Basics Course</h2>
+
+<div class="progressBar">
+<div class="progressFill" id="progressFill"></div>
+</div>
+
+<div class="lesson" id="v1">▶ JavaScript Video 1</div>
+<div class="lesson locked" id="v2">▶ JavaScript Video 2</div>
+<div class="lesson locked" id="quizBtn">📝 Quiz</div>
+
+</div>
+
+<!-- VIDEO -->
+
+<div id="videoScreen">
+
+<video id="player" controls></video>
+
+<button id="nextBtn" onclick="goNext()">Next →</button>
+
+</div>
+
+<!-- QUIZ -->
+
+<div id="quizScreen">
+
+<h2 class="quizTitle">📝 JavaScript Quiz</h2>
+
+<form id="quizForm" class="quizContainer"></form>
+
+<div class="quizButtonContainer">
+<button class="submitBtn" onclick="submitQuiz()">Submit Quiz</button>
+</div>
+
+</div>
+
+</div>
+
+<!-- SCORE -->
+
+<div class="popup" id="scorePopup">
+
+<h3>Scorecard</h3>
+
+<p id="scoreText"></p>
+
+<button onclick="closeScore()">Continue</button>
+
+</div>
+
+<!-- FEEDBACK -->
+
+<div class="popup" id="reviewPopup">
+
+<h3>Course Feedback</h3>
+
+<p>1. How clear was the course?</p>
+<div>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+</div>
+
+<p>2. Was the pace comfortable?</p>
+<div>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+</div>
+
+<p>3. Did examples help understanding?</p>
+<div>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+</div>
+
+<p>4. Was quiz relevant?</p>
+<div>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+</div>
+
+<p>5. Would you recommend this course?</p>
+<div>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+<span class="star" onclick="rate(this)">★</span>
+</div>
+
+<br>
+
+<textarea placeholder="Write feedback..." style="width:100%;height:80px"></textarea>
+
+<br><br>
+
+<button onclick="submitReview()">Submit Review</button>
+
+</div>
+
+<script>
+
+/* disable copy */
+
+document.addEventListener("contextmenu",e=>e.preventDefault())
+document.addEventListener("copy",e=>e.preventDefault())
+document.addEventListener("cut",e=>e.preventDefault())
+document.addEventListener("paste",e=>e.preventDefault())
+document.addEventListener("selectstart",e=>e.preventDefault())
+
+/* progress */
+
+let progress=0
+
+function updateProgress(){
+document.getElementById("progressFill").style.width=progress+"%"
+}
+
+/* video */
+
+let player=document.getElementById("player")
+let nextBtn=document.getElementById("nextBtn")
+let currentVideo=1
+let lastTime=0
+
+player.addEventListener("timeupdate",function(){
+
+if(player.currentTime>lastTime+0.3){
+player.currentTime=lastTime
+}
+
+lastTime=player.currentTime
+
+})
+
+document.getElementById("v1").onclick=function(){
+
+currentVideo=1
+document.getElementById("coursePage").style.display="none"
+document.getElementById("videoScreen").style.display="block"
+
+player.src="js1.mp4"
+
+}
+
+document.getElementById("v2").onclick=function(){
+
+currentVideo=2
+document.getElementById("coursePage").style.display="none"
+document.getElementById("videoScreen").style.display="block"
+
+player.src="js2.mp4"
+
+}
+
+player.onended=function(){
+nextBtn.style.display="block"
+}
+
+function goNext(){
+
+nextBtn.style.display="none"
+document.getElementById("videoScreen").style.display="none"
+document.getElementById("coursePage").style.display="block"
+
+if(currentVideo==1){
+
+progress=50
+document.getElementById("v2").classList.remove("locked")
+
+}else{
+
+progress=80
+document.getElementById("quizBtn").classList.remove("locked")
+
+}
+
+updateProgress()
+
+}
+
+/* quiz questions */
+
+const questions=[
+
+{q:"JavaScript is mainly used for?",a:"Adding interactivity",o:["Adding interactivity","Database","Styling","Networking"]},
+{q:"Which keyword declares a variable?",a:"let",o:["let","style","varible","int"]},
+{q:"Which symbol is used for comments?",a:"//",o:["//","#","<!--","**"]},
+{q:"Which company created JavaScript?",a:"Netscape",o:["Google","Netscape","Microsoft","IBM"]},
+{q:"Which function prints output to console?",a:"console.log()",o:["print()","console.log()","log.console()","write()"]},
+{q:"Which keyword defines a function?",a:"function",o:["function","method","def","func"]},
+{q:"Which operator compares value and type?",a:"===",o:["==","===","!=","="]},
+{q:"DOM stands for?",a:"Document Object Model",o:["Document Object Model","Data Object Model","Display Object Model","Document Order Model"]}
+
+]
+
+let selected=[]
+
+document.getElementById("quizBtn").onclick=function(){
+
+document.getElementById("coursePage").style.display="none"
+document.getElementById("quizScreen").style.display="block"
+
+selected=[...questions].sort(()=>Math.random()-0.5).slice(0,5)
+
+let html=""
+
+selected.forEach((q,i)=>{
+
+html+="<div class='questionCard'>"
+html+="<p>"+(i+1)+". "+q.q+"</p>"
+
+q.o.forEach(opt=>{
+html+="<label><input type='radio' name='q"+i+"' value='"+opt+"'> "+opt+"</label>"
+})
+
+html+="</div>"
+
+})
+
+document.getElementById("quizForm").innerHTML=html
+
+}
+
+function submitQuiz(){
+
+let correct=0
+let attempted=0
+
+selected.forEach((q,i)=>{
+
+let ans=document.querySelector("input[name=q"+i+"]:checked")
+
+if(ans){
+
+attempted++
+
+if(ans.value==q.a) correct++
+
+}
+
+})
+
+let wrong=attempted-correct
+
+document.getElementById("scoreText").innerHTML=
+"Attempted: "+attempted+"<br>"+
+"Correct: "+correct+"<br>"+
+"Wrong: "+wrong
+
+document.getElementById("scorePopup").style.display="block"
+
+}
+
+function closeScore(){
+document.getElementById("scorePopup").style.display="none"
+document.getElementById("reviewPopup").style.display="block"
+}
+
+function rate(el){
+
+let stars=el.parentNode.children
+
+for(let i=0;i<stars.length;i++){
+stars[i].classList.remove("active")
+}
+
+el.classList.add("active")
+
+}
+
+function submitReview(){
+
+alert("Thanks for your feedback!")
+window.location.href="index.html"
+
+}
+
+</script>
+
+</body>
+</html>
