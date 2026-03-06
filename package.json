@@ -1,0 +1,26 @@
+{
+  "name": "video-conference",
+  "version": "1.0.0",
+  "description": "Simple video conferencing app: create a meeting link, share it, and join via browser with WebRTC.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "video-conference",
+    "webrtc",
+    "meeting",
+    "socket.io",
+    "express"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
+  }
+}
