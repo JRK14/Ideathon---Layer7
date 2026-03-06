@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Gnosis</title>
+    <!-- Use dashboard specific styles -->
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="planning.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Top Navigation Bar -->
+        <header class="global-nav">
+            <div class="nav-left">
+                <div class="brand">Gnosis</div>
+            </div>
+
+            <ul class="nav-links">
+                <li class="nav-item active" data-target="home-tab">Home</li>
+                <li class="nav-item" data-target="planning-tab">Planning</li>
+                <li class="nav-item" data-target="settings-tab">Settings</li>
+            </ul>
+
+            <div class="nav-right">
+                <div class="user-profile">
+                    <div class="avatar" id="navUserInitials">U</div>
+                    <div class="user-info">
+                        <span class="user-name" id="navUserName">User Name</span>
+                        <span class="user-role" id="navUserRole">Student</span>
+                    </div>
+                    <button id="logoutBtn" class="logout-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area where Tabs Render -->
+        <main class="dashboard-main">
+            <!-- HOME TAB -->
+            <section id="home-tab" class="tab-content active">
+                <div class="welcome-banner">
+                    <h1 id="dashboardWelcome">Welcome back, Friend!</h1>
+                    <p id="dashboardQuote">"The beautiful thing about learning is that no one can take it away from
+                        you."</p>
+                </div>
+                <!-- Additional home dashboard widgets go here -->
+            </section>
+
+            <!-- PLANNING TAB (Imported from planning.html) -->
+            <section id="planning-tab" class="tab-content standalone-viewport" style="display: none;">
+                <!-- Full Planning App Container injected here to maintain internal CSS grid flows -->
+                <div id="planningAppInjectionPlaceholder"></div>
+            </section>
+
+            <!-- SETTINGS TAB -->
+            <section id="settings-tab" class="tab-content" style="display: none;">
+                <h1>Settings</h1>
+                <p>Configure your account and application preferences here.</p>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals (Global scope) -->
+    <div id="modalsContainer"></div>
+
+    <script src="dashboard.js"></script>
+</body>
+
+</html>

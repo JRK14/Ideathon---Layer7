@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student & Teacher Login | EduPortal</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="page">
+    <!-- Left: Welcome / Quotes -->
+    <aside class="welcome-panel">
+      <div class="welcome-overlay"></div>
+      <div class="welcome-content">
+        <h1 class="welcome-title">Welcome Back</h1>
+        <p class="welcome-quote" id="welcomeQuote"></p>
+        <p class="welcome-sub" id="welcomeSub"></p>
+      </div>
+    </aside>
+
+    <!-- Right: Form -->
+    <main class="form-panel">
+      <div class="logo">
+        <span class="logo-icon">◆</span>
+        <span class="logo-text">EduPortal</span>
+      </div>
+
+      <nav class="tabs">
+        <button type="button" class="tab active" data-tab="student-login">Student Login</button>
+        <button type="button" class="tab" data-tab="teacher-login">Teacher Login</button>
+        <button type="button" class="tab" data-tab="student-signup">Student Sign Up</button>
+        <button type="button" class="tab" data-tab="teacher-signup">Teacher Sign Up</button>
+      </nav>
+
+      <div class="form-container">
+        <!-- Student Login -->
+        <form class="auth-form active" id="student-login" data-type="student">
+          <h2 class="form-title">Sign in</h2>
+          <label class="field">
+            <span class="label">Email Address</span>
+            <input type="email" placeholder="student@school.edu" required />
+          </label>
+          <label class="field">
+            <span class="label">Password</span>
+            <input type="password" placeholder="••••••••" required />
+          </label>
+          <label class="checkbox-wrap">
+            <input type="checkbox" name="remember" />
+            <span>Remember Me</span>
+          </label>
+          <button type="submit" class="btn-primary">Sign in now</button>
+        </form>
+
+        <!-- Teacher Login -->
+        <form class="auth-form" id="teacher-login" data-type="teacher">
+          <h2 class="form-title">Sign in</h2>
+          <label class="field">
+            <span class="label">Email Address</span>
+            <input type="email" placeholder="teacher@school.edu" required />
+          </label>
+          <label class="field">
+            <span class="label">Password</span>
+            <input type="password" placeholder="••••••••" required />
+          </label>
+          <label class="checkbox-wrap">
+            <input type="checkbox" name="remember" />
+            <span>Remember Me</span>
+          </label>
+          <button type="submit" class="btn-primary">Sign in now</button>
+        </form>
+
+        <!-- Student Sign Up -->
+        <form class="auth-form" id="student-signup" data-type="student">
+          <h2 class="form-title">Create account</h2>
+          <label class="field">
+            <span class="label">Full Name</span>
+            <input type="text" placeholder="Your name" required />
+          </label>
+          <label class="field">
+            <span class="label">Email Address</span>
+            <input type="email" placeholder="student@school.edu" required />
+          </label>
+          <label class="field">
+            <span class="label">Password</span>
+            <input type="password" placeholder="••••••••" required />
+          </label>
+          <button type="submit" class="btn-primary">Sign up</button>
+        </form>
+
+        <!-- Teacher Sign Up -->
+        <form class="auth-form" id="teacher-signup" data-type="teacher">
+          <h2 class="form-title">Create account</h2>
+          <label class="field">
+            <span class="label">Full Name</span>
+            <input type="text" placeholder="Your name" required />
+          </label>
+          <label class="field">
+            <span class="label">Email Address</span>
+            <input type="email" placeholder="teacher@school.edu" required />
+          </label>
+          <label class="field">
+            <span class="label">Password</span>
+            <input type="password" placeholder="••••••••" required />
+          </label>
+          <button type="submit" class="btn-primary">Sign up</button>
+        </form>
+      </div>
+    </main>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
