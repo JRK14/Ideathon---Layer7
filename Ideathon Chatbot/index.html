@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classroom Chat — Teacher & Student</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --surface-hover: #243044;
+      --border: #2d3a4d;
+      --text: #e6edf3;
+      --text-muted: #8b9cb3;
+      --accent: #58a6ff;
+      --accent-dim: #388bfd66;
+      --teacher: #3fb950;
+      --student: #d2a8ff;
+      --ai: #f0883e;
+      --danger: #f85149;
+      --radius: 12px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--accent);
+    }
+
+    .role-toggle {
+      display: flex;
+      gap: 0.25rem;
+      background: var(--bg);
+      padding: 0.25rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .role-toggle button {
+      font-family: inherit;
+      font-size: 0.875rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+
+    .role-toggle button.active {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .role-toggle button:not(.active):hover {
+      background: var(--surface-hover);
+      color: var(--text);
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .hint code {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--bg);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      color: var(--ai);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .message {
+      display: flex;
+      flex-direction: column;
+      max-width: 85%;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.teacher { align-self: flex-start; }
+    .message.student { align-self: flex-end; }
+    .message.ai { align-self: flex-start; }
+
+    .message-bubble {
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .message.teacher .message-bubble {
+      background: linear-gradient(135deg, #1e3a2f 0%, #0d2818 100%);
+      border-color: var(--teacher);
+      color: var(--text);
+    }
+
+    .message.student .message-bubble {
+      background: linear-gradient(135deg, #2d2442 0%, #1a1530 100%);
+      border-color: var(--student);
+      color: var(--text);
+    }
+
+    .message.ai .message-bubble {
+      background: linear-gradient(135deg, #3d2e1a 0%, #2a1f0f 100%);
+      border-color: var(--ai);
+      color: var(--text);
+    }
+
+    .message-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.35rem;
+      font-size: 0.8rem;
+    }
+
+    .message.teacher .message-meta { color: var(--teacher); }
+    .message.student .message-meta { color: var(--student); }
+    .message.ai .message-meta { color: var(--ai); }
+
+    .message-meta .badge {
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .message-meta .time {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    .message-body {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .compose {
+      padding: 1rem 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .compose form {
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-end;
+    }
+
+    .compose textarea {
+      flex: 1;
+      font-family: inherit;
+      font-size: 1rem;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      resize: none;
+      min-height: 48px;
+      max-height: 120px;
+      transition: border-color 0.2s;
+    }
+
+    .compose textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .compose textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-dim);
+    }
+
+    .compose button {
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.75rem 1.25rem;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--accent);
+      color: var(--bg);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .compose button:hover {
+      background: #79b8ff;
+    }
+
+    .compose button:active {
+      transform: scale(0.98);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state p {
+      margin-bottom: 0.5rem;
+    }
+
+    .typing {
+      font-size: 0.85rem;
+      color: var(--ai);
+      font-style: italic;
+      padding: 0.5rem 0;
+    }
+
+    .settings-btn {
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: background 0.2s;
+    }
+    .settings-btn:hover { background: var(--border); }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1rem;
+    }
+    .modal-backdrop.hidden { display: none; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: var(--shadow);
+    }
+    .modal h3 { margin-bottom: 1rem; color: var(--text); font-size: 1.1rem; }
+    .modal label { display: block; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.35rem; }
+    .modal input { width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: inherit; margin-bottom: 1rem; }
+    .modal input::placeholder { color: var(--text-muted); }
+    .modal .note { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .modal .note a { color: var(--accent); }
+    .modal-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+    .modal-actions button { padding: 0.5rem 1rem; border-radius: 8px; border: none; cursor: pointer; font-family: inherit; font-weight: 500; }
+    .modal-actions .btn-cancel { background: var(--surface-hover); color: var(--text); }
+    .modal-actions .btn-save { background: var(--accent); color: var(--bg); }
+    .ai-status { font-size: 0.8rem; color: var(--teacher); margin-top: 0.5rem; }
+    .ai-status.no-key { color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="logo">Classroom Chat</span>
+    <div class="role-toggle">
+      <button type="button" data-role="teacher" class="active">Teacher</button>
+      <button type="button" data-role="student">Student</button>
+    </div>
+    <span class="hint">Type <code>/ai</code> for AI reply</span>
+    <button type="button" class="settings-btn" id="settingsBtn" title="AI settings">⚙</button>
+  </header>
+
+  <div class="modal-backdrop hidden" id="settingsModal">
+    <div class="modal">
+      <h3>AI assistant (OpenAI)</h3>
+      <label for="apiKey">API key</label>
+      <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off" />
+      <p class="note">Get a key at <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com</a>. Your key is stored only in this browser.</p>
+      <p class="ai-status" id="aiStatus">No API key set — add one for real AI answers.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" id="modalCancel">Cancel</button>
+        <button type="button" class="btn-save" id="modalSave">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <div class="messages" id="messages">
+      <div class="empty-state" id="emptyState">
+        <p>No messages yet.</p>
+        <p>Send a message or use <code>/ai your question</code> to ask the class assistant.</p>
+      </div>
+    </div>
+
+    <div class="compose">
+      <form id="composeForm">
+        <textarea
+          id="input"
+          placeholder="Type your message... Use /ai to ask the assistant"
+          rows="1"
+        ></textarea>
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    const messagesEl = document.getElementById('messages');
+    const emptyState = document.getElementById('emptyState');
+    const form = document.getElementById('composeForm');
+    const input = document.getElementById('input');
+    const roleButtons = document.querySelectorAll('.role-toggle button');
+    const API_KEY_STORAGE = 'classroom_ai_openai_key';
+
+    let currentRole = 'teacher';
+
+    function getStoredApiKey() {
+      try {
+        return localStorage.getItem(API_KEY_STORAGE) || '';
+      } catch (e) {
+        return '';
+      }
+    }
+
+    document.getElementById('settingsBtn').addEventListener('click', () => {
+      const modal = document.getElementById('settingsModal');
+      document.getElementById('apiKey').value = getStoredApiKey();
+      updateAiStatus();
+      modal.classList.remove('hidden');
+    });
+    document.getElementById('modalCancel').addEventListener('click', () => {
+      document.getElementById('settingsModal').classList.add('hidden');
+    });
+    document.getElementById('modalSave').addEventListener('click', () => {
+      const key = document.getElementById('apiKey').value.trim();
+      try {
+        if (key) localStorage.setItem(API_KEY_STORAGE, key);
+        else localStorage.removeItem(API_KEY_STORAGE);
+      } catch (e) {}
+      updateAiStatus();
+      document.getElementById('settingsModal').classList.add('hidden');
+    });
+    document.getElementById('settingsModal').addEventListener('click', (e) => {
+      if (e.target.id === 'settingsModal') e.target.classList.add('hidden');
+    });
+
+    function updateAiStatus() {
+      const el = document.getElementById('aiStatus');
+      if (getStoredApiKey()) {
+        el.textContent = 'API key saved. AI will answer study questions.';
+        el.className = 'ai-status';
+      } else {
+        el.textContent = 'No API key — add one for real AI answers.';
+        el.className = 'ai-status no-key';
+      }
+    }
+    updateAiStatus();
+
+    roleButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        roleButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentRole = btn.dataset.role;
+      });
+    });
+
+    function now() {
+      const d = new Date();
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function addMessage(role, body, isAI = false) {
+      if (emptyState) emptyState.remove();
+      const wrap = document.createElement('div');
+      wrap.className = `message ${role}`;
+      wrap.innerHTML = `
+        <div class="message-meta">
+          <span class="badge">${isAI ? 'AI Assistant' : role}</span>
+          <span class="time">${now()}</span>
+        </div>
+        <div class="message-bubble">
+          <div class="message-body">${escapeHtml(body)}</div>
+        </div>
+      `;
+      messagesEl.appendChild(wrap);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showTyping() {
+      const el = document.createElement('div');
+      el.className = 'typing';
+      el.id = 'typingIndicator';
+      el.textContent = 'AI is thinking...';
+      messagesEl.appendChild(el);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function hideTyping() {
+      document.getElementById('typingIndicator')?.remove();
+    }
+
+    // —— AI Bot logic ——
+    const AI_RESPONSES = {
+      greeting: [
+        "Hello! I'm the class assistant. How can I help you today?",
+        "Hi there! Ask me about the lesson, homework, or concepts.",
+        "Hey! Type your question and I'll do my best to help.",
+      ],
+      homework: [
+        "Please check the assignment posted in the classroom. If you have a specific question about it, ask your teacher or type it here.",
+        "Homework details are usually shared by your teacher. You can also ask: \"What's the homework for [subject]?\"",
+      ],
+      help: [
+        "I can help with general study tips, definitions, and pointing you to resources. For grading or official answers, ask your teacher.",
+        "I'm here for quick help. Try asking something like: \"Explain [topic]\" or \"What does [term] mean?\"",
+      ],
+      thanks: [
+        "You're welcome! Good luck with your studies.",
+        "Anytime! Feel free to ask more.",
+      ],
+      study: [
+        "A good tip: review your notes right after class and again before sleep. It helps retention.",
+        "Try the Pomodoro technique: 25 min focus, 5 min break. It keeps you fresh.",
+      ],
+      default: [
+        "Try asking with 'what is [topic]' or 'explain [topic]' — I can answer reproduction, photosynthesis, cell, mitosis, force, gravity, area of square, and many more.",
+        "I didn't catch that exact phrase. Ask something like: 'explain reproduction', 'what is photosynthesis', or 'area of square' for a direct answer.",
+      ],
+    };
+
+    const GLOSSARY = {
+      photosynthesis: "Photosynthesis is how plants make food using sunlight, water, and CO₂. They release oxygen as a byproduct.",
+      gravity: "Gravity is the force that pulls objects toward each other. On Earth it gives things weight and makes them fall.",
+      fraction: "A fraction is a part of a whole, written as one number over another (e.g. 1/2 is one half).",
+      equation: "An equation is a statement that two expressions are equal, often with a variable we solve for (e.g. 2x + 3 = 7).",
+      metaphor: "A metaphor is a figure of speech that describes something by saying it *is* something else (e.g. 'Time is money').",
+      democracy: "Democracy is a form of government where power is held by the people, usually through voting and elected representatives.",
+      area: "Area of a square = side × side, or side². For a rectangle: length × width. For a triangle: (1/2) × base × height.",
+      square: "Area of a square = side × side (or side²). Perimeter = 4 × side.",
+      reproduction: "Reproduction is how living organisms produce new individuals. In plants: seeds, spores, or vegetative parts. In animals: sexual (two parents, egg + sperm) or asexual (one parent, e.g. budding). Key for survival of species.",
+      cell: "A cell is the basic unit of life. It has a membrane, cytoplasm, and DNA. Plants have a cell wall and chloroplasts; animal cells do not. Cells divide to grow and repair.",
+      mitosis: "Mitosis is cell division that produces two identical daughter cells (same number of chromosomes). Used for growth and repair. Stages: prophase, metaphase, anaphase, telophase.",
+      respiration: "Respiration is the process that releases energy from food (glucose). Formula: glucose + oxygen → CO₂ + water + energy. It happens in mitochondria.",
+      force: "Force is a push or pull that can change an object's motion or shape. Unit: Newton (N). F = ma (force = mass × acceleration).",
+      energy: "Energy is the ability to do work. Types: kinetic (motion), potential (stored), heat, light, chemical. It is conserved—can change form but not be created or destroyed.",
+      evolution: "Evolution is the change in living things over time. Natural selection: organisms with traits better suited to the environment survive and reproduce more, so those traits become more common.",
+      atom: "An atom is the smallest unit of an element. It has a nucleus (protons + neutrons) and electrons around it. Different elements have different numbers of protons.",
+      ecosystem: "An ecosystem is a community of living things (plants, animals) and their non-living environment (soil, water, air) interacting together. Examples: forest, pond, desert.",
+      digestion: "Digestion is the breakdown of food into nutrients the body can absorb. It starts in the mouth (enzymes), continues in the stomach (acid), and finishes in the small intestine where nutrients are absorbed.",
+      percentage: "Percentage means 'per hundred'. To find X% of a number: (X/100) × number. To find what % A is of B: (A/B) × 100.",
+      ratio: "A ratio compares two quantities (e.g. 2:3 or 2/3). To share 50 in ratio 2:3: 2+3=5 parts, so 20 and 30.",
+      perimeter: "Perimeter is the total distance around a shape. Rectangle: 2×(length + width). Square: 4×side. Circle (circumference): 2πr.",
+      verb: "A verb is a word that describes an action (run, think) or state (is, seem). It often changes form for tense (run, ran, running).",
+      noun: "A noun is a word that names a person, place, thing, or idea (e.g. teacher, city, book, freedom). Can be proper (India) or common (country).",
+      adjective: "An adjective describes a noun (e.g. big, red, happy). It usually comes before the noun or after linking verbs like 'is'.",
+      planet: "A planet orbits a star, is round, and has cleared its orbit. Our solar system has eight: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune.",
+      water: "Water is H₂O—two hydrogen atoms, one oxygen. It exists as solid (ice), liquid (water), and gas (steam). Essential for life; the water cycle moves it through the environment.",
+      magnet: "A magnet has a north and south pole; like poles repel, opposite poles attract. It creates a magnetic field. Used in compasses, motors, and many devices.",
+      friction: "Friction is a force that opposes motion between two surfaces in contact. It causes wear and heat. Rough surfaces have more friction than smooth ones.",
+      density: "Density = mass ÷ volume (e.g. g/cm³). It tells how tightly matter is packed. Objects float in a fluid if they are less dense than the fluid.",
+      bacteria: "Bacteria are single-celled organisms without a nucleus (prokaryotes). Some cause disease; many are helpful (e.g. in digestion, making yogurt). They can reproduce quickly.",
+      virus: "A virus is a tiny particle that needs a host cell to reproduce. It is not considered a living cell. Vaccines help the body fight viruses.",
+      climate: "Climate is the average weather in a place over a long time (years). Affected by latitude, altitude, oceans, and human activity. Different from weather (short-term).",
+      revolution: "In history, a revolution is a major, often violent change in government or society (e.g. French Revolution, Industrial Revolution). In science, it can mean one full orbit around something.",
+    };
+
+    // Phrase-based answers (user text contains one of these phrases → answer)
+    const PHRASE_ANSWERS = [
+      { phrases: ['right angle triangle', 'right triangle', 'right angled triangle', 'formula of a right angle', 'pythagoras'], answer: "For a right-angled triangle: (1) Pythagorean theorem — a² + b² = c² (c = hypotenuse). (2) Area = (1/2) × base × height." },
+      { phrases: ['area of square', 'area of a square'], answer: "Area of a square = side × side (or side²). Example: if side = 5 cm, area = 25 cm²." },
+      { phrases: ['area of triangle'], answer: "Area of a triangle = (1/2) × base × height. Make sure the height is perpendicular to the base." },
+      { phrases: ['area of circle'], answer: "Area of a circle = πr² (pi times radius squared). Circumference = 2πr." },
+      { phrases: ['perimeter of square'], answer: "Perimeter of a square = 4 × side (add all four equal sides)." },
+    ];
+
+    const PATTERNS = [
+      { keys: ['hello', 'hi', 'hey', 'good morning', 'good afternoon'], type: 'greeting' },
+      { keys: ['homework', 'assignment', 'due date', 'what to do'], type: 'homework' },
+      { keys: ['study', 'study tip', 'how to study', 'remember'], type: 'study' },
+      { keys: ['help me', 'how do i', 'how can i'], type: 'help' },
+      { keys: ['thank', 'thanks', 'thx'], type: 'thanks' },
+    ];
+
+    let aiQuestionCount = 0;
+    const MAX_AI_QUESTIONS = 10;
+
+    function getAIReply(userText) {
+      const lower = userText.toLowerCase().trim();
+
+      for (const { phrases, answer } of PHRASE_ANSWERS) {
+        if (phrases.some(p => lower.includes(p))) return answer;
+      }
+
+      const explainMatch = lower.match(/explain\s+(\w+)/);
+      if (explainMatch && GLOSSARY[explainMatch[1]]) return GLOSSARY[explainMatch[1]];
+
+      const whatIsMatch = lower.match(/what (?:is|are|does) (\w+)/);
+      if (whatIsMatch && GLOSSARY[whatIsMatch[1]]) return GLOSSARY[whatIsMatch[1]];
+
+      let type = 'default';
+      for (const { keys, type: t } of PATTERNS) {
+        if (keys.some(k => lower.includes(k))) {
+          type = t;
+          break;
+        }
+      }
+      const list = AI_RESPONSES[type] || AI_RESPONSES.default;
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
+    const SYSTEM_PROMPT = `You are a helpful classroom assistant for students and teachers. Answer the user's academic or study-related question clearly and concisely, in a way suitable for learning. Be accurate and educational. Cover the main points without being overly long. If the question is not related to studies, briefly say you're here to help with studies and suggest they ask a study-related question.`;
+
+    async function callOpenAI(userMessage) {
+      const key = getStoredApiKey();
+      if (!key) return null;
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + key,
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: SYSTEM_PROMPT },
+            { role: 'user', content: userMessage },
+          ],
+          max_tokens: 500,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error?.message || res.statusText || 'Request failed');
+      }
+      const data = await res.json();
+      const content = data.choices?.[0]?.message?.content?.trim();
+      return content || null;
+    }
+
+    function replyFromAI(userMessage) {
+      showTyping();
+      const key = getStoredApiKey();
+
+      if (key) {
+        callOpenAI(userMessage)
+          .then((reply) => {
+            hideTyping();
+            if (reply) {
+              addMessage('ai', reply, true);
+            } else {
+              addMessage('ai', "I couldn't generate a reply. Please try again or rephrase.", true);
+            }
+          })
+          .catch((err) => {
+            hideTyping();
+            const msg = err.message || String(err);
+            let text = "Sorry, I couldn't get an AI response. ";
+            if (msg.includes('401') || msg.includes('Incorrect API key')) text += "Check your API key in Settings.";
+            else if (msg.includes('429')) text += "Rate limit reached — try again in a moment.";
+            else text += msg;
+            addMessage('ai', text, true);
+          });
+        return;
+      }
+
+      setTimeout(() => {
+        hideTyping();
+        const fallback = getAIReply(userMessage);
+        const tip = " — Add an API key in Settings (⚙) for AI answers to any question.";
+        addMessage('ai', fallback + tip, true);
+      }, 400);
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+
+      addMessage(currentRole, text);
+      input.value = '';
+      input.style.height = 'auto';
+
+      const hasAI = /\/ai\b/i.test(text);
+      const aiQuery = text.replace(/\/ai\s*/i, '').trim() || text;
+
+      if (hasAI) {
+        const key = getStoredApiKey();
+        if (key) {
+          aiQuestionCount++;
+          if (aiQuestionCount > MAX_AI_QUESTIONS) {
+            showTyping();
+            setTimeout(() => {
+              hideTyping();
+              addMessage('ai', "You've asked more than 10 questions in this session. For more help, please ask your teacher in class.", true);
+            }, 400);
+          } else {
+            replyFromAI(aiQuery);
+          }
+        } else {
+          replyFromAI(aiQuery);
+        }
+      }
+    });
+
+    input.addEventListener('input', function () {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+  </script>
+</body>
+</html>
